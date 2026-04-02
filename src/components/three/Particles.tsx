@@ -81,7 +81,7 @@ export function Particles({ count = 500 }: { count?: number }) {
   return (
     <points ref={ref} geometry={geometry}>
       <pointsMaterial
-        size={0.09}
+        size={0.12}
         color="#ffffff"
         map={starTexture ?? undefined}
         alphaMap={starTexture ?? undefined}
