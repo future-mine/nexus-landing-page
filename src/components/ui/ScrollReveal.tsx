@@ -19,7 +19,7 @@ const offsets = {
 
 export function ScrollReveal({
   children,
-  className,
+  className = "",
   delay = 0,
   direction = "up",
 }: ScrollRevealProps) {

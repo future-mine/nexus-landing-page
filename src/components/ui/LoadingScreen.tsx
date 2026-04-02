@@ -2,12 +2,15 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useHasMounted } from "@/hooks/useHasMounted";
 
 export function LoadingScreen() {
+  const mounted = useHasMounted();
   const [visible, setVisible] = useState(true);
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
+    if (!mounted) return;
     const id = setInterval(() => {
       setProgress((p) => {
         const next = p + Math.random() * 12 + 4;
@@ -20,7 +23,29 @@ export function LoadingScreen() {
       });
     }, 80);
     return () => clearInterval(id);
-  }, []);
+  }, [mounted]);
+
+  if (!mounted) {
+    return (
+      <div
+        className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-background"
+        aria-busy="true"
+      >
+        <h2 className="mb-10 text-3xl font-bold tracking-widest text-gradient">
+          NEXUS
+        </h2>
+        <div className="h-[3px] w-48 overflow-hidden rounded-full bg-white/10">
+          <div
+            className="h-full rounded-full bg-gradient-to-r from-primary to-accent"
+            style={{ width: "0%" }}
+          />
+        </div>
+        <p className="mt-4 font-mono text-xs tracking-wider text-foreground/40">
+          0%
+        </p>
+      </div>
+    );
+  }
 
   return (
     <AnimatePresence>
@@ -29,18 +54,15 @@ export function LoadingScreen() {
           key="loader"
           exit={{ opacity: 0, scale: 1.05 }}
           transition={{ duration: 0.8, ease: "easeInOut" }}
-          className="page-x fixed inset-0 z-[100] flex flex-col items-center justify-center bg-background"
+          className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-background"
+          aria-busy="true"
+          initial={{ opacity: 1 }}
         >
-          <motion.h2
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="text-3xl font-bold text-gradient mb-10 tracking-widest"
-          >
+          <h2 className="mb-10 text-3xl font-bold tracking-widest text-gradient">
             NEXUS
-          </motion.h2>
+          </h2>
 
-          <div className="w-48 h-[3px] bg-white/10 rounded-full overflow-hidden">
+          <div className="h-[3px] w-48 overflow-hidden rounded-full bg-white/10">
             <motion.div
               className="h-full rounded-full bg-gradient-to-r from-primary to-accent"
               animate={{ width: `${Math.min(progress, 100)}%` }}
@@ -48,7 +70,7 @@ export function LoadingScreen() {
             />
           </div>
 
-          <p className="mt-4 text-xs text-foreground/40 font-mono tracking-wider">
+          <p className="mt-4 font-mono text-xs tracking-wider text-foreground/40">
             {Math.min(Math.round(progress), 100)}%
           </p>
         </motion.div>

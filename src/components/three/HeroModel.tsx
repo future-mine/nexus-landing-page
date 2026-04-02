@@ -2,24 +2,9 @@
 
 import { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
-import { Float, MeshDistortMaterial, Environment } from "@react-three/drei";
+import { Float, MeshDistortMaterial } from "@react-three/drei";
 import { MathUtils, type Mesh, type Group } from "three";
 import { scrollState, mouseState } from "@/lib/store";
-
-/*
- * To swap in a real GLTF/GLB model:
- *
- *   import { useGLTF } from '@react-three/drei';
- *
- *   function Model() {
- *     const { scene } = useGLTF('/models/your-model.glb');
- *     return <primitive object={scene} scale={1} />;
- *   }
- *
- *   useGLTF.preload('/models/your-model.glb');
- *
- * Place optimized (draco / meshopt) .glb files in public/models/.
- */
 
 export function HeroModel() {
   const groupRef = useRef<Group>(null);
@@ -36,57 +21,62 @@ export function HeroModel() {
     l.scroll = MathUtils.damp(l.scroll, scrollState.progress, 4, delta);
 
     const t = state.clock.elapsedTime;
-    groupRef.current.rotation.y = t * 0.1 + l.mx * 0.5;
-    groupRef.current.rotation.x = Math.sin(t * 0.05) * 0.1 + l.my * 0.3;
+    groupRef.current.rotation.y = t * 0.12 + l.mx * 0.38;
+    groupRef.current.rotation.x = Math.sin(t * 0.06) * 0.12 + l.my * 0.2;
 
-    groupRef.current.position.y = -l.scroll * 3;
-    const s = 1 - l.scroll * 0.3;
-    groupRef.current.scale.setScalar(Math.max(s, 0.3));
+    const targetX = state.viewport.width > 7 ? 0.9 : 0;
+    groupRef.current.position.x = MathUtils.damp(
+      groupRef.current.position.x,
+      targetX,
+      4,
+      delta
+    );
+    groupRef.current.position.y = 0.2 - l.scroll * 2.5;
+    const s = 1 - l.scroll * 0.25;
+    groupRef.current.scale.setScalar(Math.max(s, 0.45));
   });
 
   return (
     <>
-      <Environment preset="city" environmentIntensity={0.4} />
-      <ambientLight intensity={0.15} />
-      <pointLight position={[10, 10, 10]} intensity={1.5} color="#7c3aed" />
-      <pointLight position={[-10, -5, -10]} intensity={0.8} color="#06b6d4" />
-      <directionalLight position={[0, 5, 5]} intensity={0.3} />
+      <ambientLight intensity={0.35} />
+      <hemisphereLight args={["#ddd6fe", "#111827", 0.7]} position={[0, 20, 0]} />
+      <directionalLight position={[8, 10, 10]} intensity={1.25} color="#ffffff" />
+      <pointLight position={[4, 3, 7]} intensity={1.5} color="#a78bfa" distance={28} />
+      <pointLight position={[-5, -2, 4]} intensity={0.9} color="#22d3ee" distance={24} />
 
-      <Float speed={1.5} rotationIntensity={0.3} floatIntensity={0.5}>
-        <group ref={groupRef}>
-          {/* Primary morphing icosahedron */}
+      <Float speed={1.8} rotationIntensity={0.35} floatIntensity={0.55}>
+        <group ref={groupRef} position={[0, 0, 0]}>
+          {/* Elegant primary planet */} 
           <mesh ref={mainRef}>
-            <icosahedronGeometry args={[1.5, 8]} />
+            <icosahedronGeometry args={[1.62, 4]} />
             <MeshDistortMaterial
-              color="#7c3aed"
-              metalness={0.95}
-              roughness={0.08}
-              distort={0.35}
-              speed={1.5}
-              envMapIntensity={1.2}
+              color="#c4b5fd"
+              emissive="#7c3aed"
+              emissiveIntensity={0.25}
+              metalness={0.35}
+              roughness={0.28}
+              distort={0.18}
+              speed={1.05}
             />
           </mesh>
 
-          {/* Wireframe overlay for tech aesthetic */}
-          <mesh scale={1.02}>
-            <icosahedronGeometry args={[1.5, 3]} />
+          <mesh scale={1.045}>
+            <icosahedronGeometry args={[1.62, 2]} />
             <meshBasicMaterial
-              color="#a78bfa"
+              color="#ede9fe"
               wireframe
               transparent
-              opacity={0.08}
+              opacity={0.46}
             />
           </mesh>
 
-          {/* Inner glow core */}
-          <mesh scale={0.4}>
-            <sphereGeometry args={[1, 32, 32]} />
-            <meshBasicMaterial color="#06b6d4" transparent opacity={0.15} />
+          <mesh scale={0.45}>
+            <sphereGeometry args={[1, 24, 24]} />
+            <meshBasicMaterial color="#22d3ee" transparent opacity={0.18} />
           </mesh>
 
-          {/* Orbiting rings */}
-          <OrbitRing radius={2.2} speed={0.3} tilt={Math.PI / 3} />
-          <OrbitRing radius={2.6} speed={-0.2} tilt={Math.PI / 1.5} />
+          <OrbitRing radius={2.2} speed={0.28} tilt={Math.PI / 3} />
+          <OrbitRing radius={2.5} speed={-0.18} tilt={Math.PI / 1.45} />
         </group>
       </Float>
     </>
@@ -111,8 +101,8 @@ function OrbitRing({
 
   return (
     <mesh ref={ref} rotation={[tilt, 0, 0]}>
-      <torusGeometry args={[radius, 0.005, 16, 100]} />
-      <meshBasicMaterial color="#a78bfa" transparent opacity={0.2} />
+      <torusGeometry args={[radius, 0.012, 12, 80]} />
+      <meshBasicMaterial color="#c4b5fd" transparent opacity={0.45} />
     </mesh>
   );
 }

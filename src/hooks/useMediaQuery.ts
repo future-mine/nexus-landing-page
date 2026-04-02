@@ -1,18 +1,19 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useSyncExternalStore } from "react";
 
+/**
+ * SSR-safe: server + first hydrated frame use `false` so markup matches.
+ * After hydration, subscribes to matchMedia (no useEffect timing skew).
+ */
 export function useMediaQuery(query: string): boolean {
-  const [matches, setMatches] = useState(false);
-
-  useEffect(() => {
-    const mql = window.matchMedia(query);
-    setMatches(mql.matches);
-
-    const onChange = (e: MediaQueryListEvent) => setMatches(e.matches);
-    mql.addEventListener("change", onChange);
-    return () => mql.removeEventListener("change", onChange);
-  }, [query]);
-
-  return matches;
+  return useSyncExternalStore(
+    (onChange) => {
+      const mql = window.matchMedia(query);
+      mql.addEventListener("change", onChange);
+      return () => mql.removeEventListener("change", onChange);
+    },
+    () => window.matchMedia(query).matches,
+    () => false
+  );
 }

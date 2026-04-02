@@ -1,33 +1,37 @@
 "use client";
 
 import { Canvas } from "@react-three/fiber";
-import { Suspense } from "react";
 import { Preload, AdaptiveDpr } from "@react-three/drei";
 import { HeroModel } from "./HeroModel";
 import { Particles } from "./Particles";
 import { Effects } from "./Effects";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 
+/**
+ * No Suspense around HeroModel — drei's Environment async-loads HDRIs and can leave
+ * an empty canvas (fallback null) on slow/blocked networks. Planet uses lights + emissive only.
+ * Keep rendering path stable and add only subtle post effects.
+ */
 export default function Scene() {
   const isMobile = useMediaQuery("(max-width: 768px)");
 
   return (
     <Canvas
-      camera={{ position: [0, 0, 6], fov: 45 }}
+      className="h-full w-full touch-none"
+      camera={{ position: [0, 0, 7], fov: 42 }}
       dpr={[1, 2]}
       gl={{
         antialias: true,
-        alpha: true,
         powerPreference: "high-performance",
+        alpha: false,
       }}
     >
-      <Suspense fallback={null}>
-        <HeroModel />
-        <Particles count={isMobile ? 200 : 500} />
-        {!isMobile && <Effects />}
-        <AdaptiveDpr pixelated />
-        <Preload all />
-      </Suspense>
+      <color attach="background" args={["#030014"]} />
+      <HeroModel />
+      <Particles count={isMobile ? 120 : 350} />
+      {!isMobile && <Effects />}
+      <AdaptiveDpr />
+      <Preload all />
     </Canvas>
   );
 }

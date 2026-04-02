@@ -1,8 +1,5 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ScrollReveal } from "./ScrollReveal";
 
 const features = [
@@ -39,66 +36,35 @@ const features = [
 ];
 
 export function Features() {
-  const sectionRef = useRef<HTMLElement>(null);
-  const cardsRef = useRef<(HTMLDivElement | null)[]>([]);
-
-  useEffect(() => {
-    gsap.registerPlugin(ScrollTrigger);
-
-    const cards = cardsRef.current.filter(Boolean) as HTMLDivElement[];
-    if (!cards.length) return;
-
-    const ctx = gsap.context(() => {
-      gsap.from(cards, {
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top 80%",
-          toggleActions: "play none none none",
-        },
-        y: 80,
-        opacity: 0,
-        duration: 0.9,
-        stagger: 0.15,
-        ease: "power3.out",
-      });
-    }, sectionRef);
-
-    return () => ctx.revert();
-  }, []);
-
   return (
-    <section ref={sectionRef} id="features" className="page-x relative py-24 sm:py-32">
+    <section id="features" className="relative scroll-mt-20 px-6 py-32 sm:px-8 sm:py-40 lg:px-12">
       {/* Ambient glow */}
-      <div className="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 h-80 w-[600px] rounded-full bg-primary/10 blur-[120px]" />
+      <div className="pointer-events-none absolute -top-40 left-1/2 h-80 w-[600px] -translate-x-1/2 rounded-full bg-primary/10 blur-[120px]" />
 
       <div className="mx-auto max-w-7xl">
-        <ScrollReveal className="mb-20 text-center">
+        <ScrollReveal className="mx-auto mb-20 max-w-2xl text-center">
           <h2 className="text-3xl font-bold md:text-5xl">
             Why Choose <span className="text-gradient">Nexus</span>
           </h2>
-          <p className="mx-auto mt-4 max-w-xl text-foreground/40">
+          <p className="mt-6 text-base leading-relaxed text-foreground/45 sm:text-lg">
             Everything you need to build world-class 3D web experiences,
             from prototype to production.
           </p>
         </ScrollReveal>
 
-        <div className="grid gap-6 md:grid-cols-3">
+        <div className="grid gap-8 md:grid-cols-3">
           {features.map((f, i) => (
-            <div
-              key={f.title}
-              ref={(el) => {
-                cardsRef.current[i] = el;
-              }}
-              className="group glass rounded-2xl p-8 transition-all duration-300 hover:border-primary/30 hover:bg-white/[0.06]"
-            >
-              <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary transition-colors group-hover:bg-primary/20">
-                {f.icon}
+            <ScrollReveal key={f.title} delay={i * 0.15}>
+              <div className="glass h-full rounded-2xl p-8 transition-all duration-300 hover:border-primary/30 hover:bg-white/[0.06]">
+                <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                  {f.icon}
+                </div>
+                <h3 className="mb-3 text-xl font-semibold">{f.title}</h3>
+                <p className="leading-relaxed text-foreground/45">
+                  {f.description}
+                </p>
               </div>
-              <h3 className="mb-3 text-xl font-semibold">{f.title}</h3>
-              <p className="leading-relaxed text-foreground/45">
-                {f.description}
-              </p>
-            </div>
+            </ScrollReveal>
           ))}
         </div>
       </div>

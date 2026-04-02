@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
 
 const links = [
   { label: "Features", href: "#features" },
@@ -19,15 +18,12 @@ export function Navbar() {
   }, []);
 
   return (
-    <motion.header
-      initial={{ y: -100, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.8, delay: 1.5, ease: "easeOut" }}
-      className={`page-x fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled ? "glass header-y" : "header-y-relaxed"
+    <header
+      className={`fixed top-0 left-0 right-0 z-50 px-6 transition-all duration-300 sm:px-8 lg:px-12 ${
+        scrolled ? "glass py-3" : "py-5"
       }`}
     >
-      <nav className="mx-auto flex w-full max-w-7xl items-center justify-between">
+      <nav className="mx-auto flex max-w-7xl items-center justify-between">
         <a href="#" className="text-xl font-bold text-gradient">
           NEXUS
         </a>
@@ -44,12 +40,12 @@ export function Navbar() {
           ))}
           <a
             href="#cta"
-            className="rounded-lg bg-primary px-5 py-2 text-sm font-medium text-white transition-all hover:bg-primary-light hover:shadow-[0_0_20px_rgba(124,58,237,0.4)]"
+            className="rounded-lg bg-primary px-6 py-2.5 text-sm font-medium text-white transition-all hover:bg-primary-light hover:shadow-[0_0_20px_rgba(124,58,237,0.4)]"
           >
             Get Started
           </a>
         </div>
       </nav>
-    </motion.header>
+    </header>
   );
 }

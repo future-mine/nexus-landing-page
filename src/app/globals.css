@@ -12,14 +12,9 @@
   --font-mono: var(--font-geist-mono);
 }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
 }
 
 body {
@@ -27,46 +22,6 @@ body {
   color: var(--color-foreground);
   font-family: var(--font-sans), system-ui, sans-serif;
   overflow-x: hidden;
-}
-
-/**
- * Horizontal gutter so UI never sits flush against the viewport.
- * Uses max(tailwind-like spacing, safe-area) for notched phones / PWA.
- */
-.page-x {
-  padding-left: max(1.25rem, env(safe-area-inset-left, 0px));
-  padding-right: max(1.25rem, env(safe-area-inset-right, 0px));
-}
-
-@media (min-width: 640px) {
-  .page-x {
-    padding-left: max(1.75rem, env(safe-area-inset-left, 0px));
-    padding-right: max(1.75rem, env(safe-area-inset-right, 0px));
-  }
-}
-
-@media (min-width: 1024px) {
-  .page-x {
-    padding-left: max(2.5rem, env(safe-area-inset-left, 0px));
-    padding-right: max(2.5rem, env(safe-area-inset-right, 0px));
-  }
-}
-
-@media (min-width: 1280px) {
-  .page-x {
-    padding-left: max(3rem, env(safe-area-inset-left, 0px));
-    padding-right: max(3rem, env(safe-area-inset-right, 0px));
-  }
-}
-
-.header-y {
-  padding-top: max(0.75rem, env(safe-area-inset-top, 0px));
-  padding-bottom: 0.75rem;
-}
-
-.header-y-relaxed {
-  padding-top: max(1.25rem, env(safe-area-inset-top, 0px));
-  padding-bottom: 1.25rem;
 }
 
 ::-webkit-scrollbar {
@@ -94,12 +49,6 @@ body {
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.glow {
-  box-shadow:
-    0 0 20px rgba(124, 58, 237, 0.3),
-    0 0 60px rgba(124, 58, 237, 0.1);
 }
 
 .hero-grid {
