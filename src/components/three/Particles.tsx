@@ -2,7 +2,13 @@
 
 import { useRef, useMemo } from "react";
 import { useFrame } from "@react-three/fiber";
-import { BufferGeometry, BufferAttribute, Points as ThreePoints } from "three";
+import {
+  AdditiveBlending,
+  BufferGeometry,
+  BufferAttribute,
+  CanvasTexture,
+  Points as ThreePoints,
+} from "three";
 
 /** Deterministic PRNG so positions are identical if this tree ever SSRs (avoids hydration drift). */
 function mulberry32(seed: number) {
@@ -35,6 +41,37 @@ export function Particles({ count = 500 }: { count?: number }) {
     return geo;
   }, [count]);
 
+  const starTexture = useMemo(() => {
+    const canvas = document.createElement("canvas");
+    canvas.width = 64;
+    canvas.height = 64;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return null;
+
+    ctx.clearRect(0, 0, 64, 64);
+    ctx.translate(32, 32);
+    ctx.beginPath();
+    for (let i = 0; i < 10; i++) {
+      const angle = (Math.PI / 5) * i - Math.PI / 2;
+      const radius = i % 2 === 0 ? 27 : 9;
+      ctx.lineTo(Math.cos(angle) * radius, Math.sin(angle) * radius);
+    }
+    ctx.closePath();
+    ctx.fillStyle = "#ffffff";
+    ctx.fill();
+
+    // Soft glow around star for a premium look.
+    const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, 30);
+    grad.addColorStop(0, "rgba(255,255,255,0.6)");
+    grad.addColorStop(1, "rgba(255,255,255,0)");
+    ctx.fillStyle = grad;
+    ctx.fillRect(-32, -32, 64, 64);
+
+    const tex = new CanvasTexture(canvas);
+    tex.needsUpdate = true;
+    return tex;
+  }, []);
+
   useFrame((state) => {
     if (!ref.current) return;
     ref.current.rotation.y = state.clock.elapsedTime * 0.015;
@@ -44,10 +81,14 @@ export function Particles({ count = 500 }: { count?: number }) {
   return (
     <points ref={ref} geometry={geometry}>
       <pointsMaterial
-        size={0.025}
-        color="#a78bfa"
+        size={0.09}
+        color="#ffffff"
+        map={starTexture ?? undefined}
+        alphaMap={starTexture ?? undefined}
         transparent
-        opacity={0.5}
+        opacity={1}
+        alphaTest={0.08}
+        blending={AdditiveBlending}
         sizeAttenuation
         depthWrite={false}
       />
